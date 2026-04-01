@@ -10,7 +10,7 @@ const STATUS_DOT = {
 };
 
 export default function Column({
-  column, tasks, index, isDragOver, isColumnDragOver, members,
+  column, tasks, index, isDragOver, members,
   onAddTask, onDeleteTask, onDeleteColumn, onEditTask,
   onDragStart, onDragEnd, onDragOver, onDrop,
   onColumnDragStart, onColumnDragOver, onColumnDrop,
@@ -20,21 +20,30 @@ export default function Column({
 
   return (
     <div
-      draggable
-      onDragStart={(e) => { e.stopPropagation(); onColumnDragStart(column.id); }}
-      onDragEnd={(e) => { e.stopPropagation(); }}
-      onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); onDragOver(column.id); onColumnDragOver(column.id); }}
-      onDrop={(e) => { e.stopPropagation(); onDrop(column.id); onColumnDrop(column.id); }}
+      onDragOver={(e) => { e.preventDefault(); onDragOver(column.id); onColumnDragOver(column.id); }}
+      onDrop={(e) => { onDrop(column.id); onColumnDrop(column.id); }}
       className={`
         flex flex-col rounded-xl border p-3 min-w-[260px] w-[260px] shrink-0
-        transition-colors duration-150 cursor-grab active:cursor-grabbing
-        ${isColumnDragOver ? 'border-brand/50 bg-brand/5' : isDragOver ? 'column-drag-over' : 'bg-surface-column border-border'}
+        transition-colors duration-150
+        ${isDragOver ? 'column-drag-over' : 'bg-surface-column border-border'}
       `}
       style={{ animationDelay: `${index * 80}ms`, animation: 'fadeSlideIn 0.35s ease both' }}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-3 px-0.5 group/header">
         <div className="flex items-center gap-2">
+          {/* Drag handle — only this is draggable */}
+          <span
+            draggable
+            onDragStart={(e) => { e.stopPropagation(); onColumnDragStart(column.id); }}
+            onDragEnd={(e) => e.stopPropagation()}
+            className="cursor-grab active:cursor-grabbing text-ink-secondary opacity-0 group-hover/header:opacity-100 transition-opacity"
+            aria-label="Drag to reorder column"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </span>
           <span className={`w-2 h-2 rounded-full shrink-0 ${STATUS_DOT[column.id] || 'bg-status-todo'}`} />
           <span className="text-sm font-semibold text-ink-primary font-display">{column.title}</span>
         </div>

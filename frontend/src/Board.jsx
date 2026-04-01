@@ -14,7 +14,7 @@ export default function Board({
   const handleColumnDrop = (colId) => {
     const { from } = colDrag.current;
     colDrag.current = { from: null, over: null };
-    if (!from || from === colId) return;
+    if (!from || from === colId) return;  // not a column drag, ignore
     const next = [...columnDefs];
     const fromIdx = next.findIndex((c) => c.id === from);
     const toIdx = next.findIndex((c) => c.id === colId);
