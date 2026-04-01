@@ -38,12 +38,12 @@ const NAV = [
   },
 ];
 
-export default function Sidebar({ boardName, activeNav, onNavChange, memberCount, onPricingClick }) {
+export default function Sidebar({activeNav, onNavChange, memberCount, onPricingClick }) {
   return (
     <aside className="flex flex-col w-56 min-h-screen bg-brand text-white shrink-0">
       <div className="px-5 py-5 border-b border-white/10">
-        <span className="font-display text-lg font-bold tracking-tight">
-          {boardName || 'Kanban'}
+        <span className="flex justify-center font-display text-lg font-bold tracking-tight mr-5">
+          {'NP.com'}
         </span>
       </div>
 

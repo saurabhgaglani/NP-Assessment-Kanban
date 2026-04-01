@@ -10,21 +10,25 @@ const STATUS_DOT = {
 };
 
 export default function Column({
-  column, tasks, index, isDragOver, members,
+  column, tasks, index, isDragOver, isColumnDragOver, members,
   onAddTask, onDeleteTask, onDeleteColumn, onEditTask,
   onDragStart, onDragEnd, onDragOver, onDrop,
+  onColumnDragStart, onColumnDragOver, onColumnDrop,
   settlingCardId,
 }) {
   const [adding, setAdding] = useState(false);
 
   return (
     <div
-      onDragOver={(e) => { e.preventDefault(); onDragOver(column.id); }}
-      onDrop={() => onDrop(column.id)}
+      draggable
+      onDragStart={(e) => { e.stopPropagation(); onColumnDragStart(column.id); }}
+      onDragEnd={(e) => { e.stopPropagation(); }}
+      onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); onDragOver(column.id); onColumnDragOver(column.id); }}
+      onDrop={(e) => { e.stopPropagation(); onDrop(column.id); onColumnDrop(column.id); }}
       className={`
         flex flex-col rounded-xl border p-3 min-w-[260px] w-[260px] shrink-0
-        transition-colors duration-150
-        ${isDragOver ? 'column-drag-over' : 'bg-surface-column border-border'}
+        transition-colors duration-150 cursor-grab active:cursor-grabbing
+        ${isColumnDragOver ? 'border-brand/50 bg-brand/5' : isDragOver ? 'column-drag-over' : 'bg-surface-column border-border'}
       `}
       style={{ animationDelay: `${index * 80}ms`, animation: 'fadeSlideIn 0.35s ease both' }}
     >

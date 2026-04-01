@@ -251,6 +251,13 @@ export default function App() {
     window.location.reload();
   }, []);
 
+  const handleReorderColumns = useCallback((newDefs) => {
+    setColumnDefs(newDefs);
+    localStorage.setItem(COLUMN_DEFS_KEY, JSON.stringify(newDefs));
+    const currentUser = userRef.current;
+    if (currentUser) saveColumns(newDefs, currentUser.id).catch(console.error);
+  }, []);
+
   const handleAddColumn = useCallback((title) => {
     const id = `col_${Date.now()}`;
     const newDef = { id, title };
@@ -374,6 +381,7 @@ export default function App() {
               onEditTask={handleEditTask}
               onAddColumn={handleAddColumn}
               onDeleteColumn={handleDeleteColumn}
+              onReorderColumns={handleReorderColumns}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
               onDragOver={handleDragOver}

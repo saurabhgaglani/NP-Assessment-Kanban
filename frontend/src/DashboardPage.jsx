@@ -35,8 +35,10 @@ function Bar({ label, value, max, color }) {
 export default function DashboardPage({ columns, columnDefs, members }) {
   const allTasks = useMemo(() => Object.values(columns).flat(), [columns]);
   const total = allTasks.length;
-  const done = (columns['done'] || []).length;
-  const inProgress = (columns['inprogress'] || []).length;
+  const doneColId = useMemo(() => columnDefs.find((c) => c.title.toLowerCase() === 'done')?.id, [columnDefs]);
+  const inProgressColId = useMemo(() => columnDefs.find((c) => c.title.toLowerCase().includes('progress'))?.id, [columnDefs]);
+  const done = (columns[doneColId] || columns['done'] || []).length;
+  const inProgress = (columns[inProgressColId] || columns['inprogress'] || []).length;
   const completionRate = total > 0 ? Math.round((done / total) * 100) : 0;
 
   // Tasks per member
@@ -48,13 +50,13 @@ export default function DashboardPage({ columns, columnDefs, members }) {
         counts[t.assigneeId].total++;
       }
     });
-    (columns['done'] || []).forEach((t) => {
+    (columns[doneColId] || columns['done'] || []).forEach((t) => {
       if (t.assigneeId && counts[t.assigneeId]) {
         counts[t.assigneeId].done++;
       }
     });
     return Object.values(counts).sort((a, b) => b.total - a.total);
-  }, [allTasks, columns, members]);
+  }, [allTasks, columns, members, doneColId]);
 
   // Tasks per priority
   const priorityCounts = useMemo(() => {

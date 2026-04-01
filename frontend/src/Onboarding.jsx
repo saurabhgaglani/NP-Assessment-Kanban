@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import BoardPreview from './BoardPreview';
 import TaskForm from './TaskForm';
 import { avatarColor, initials } from './lib/members';
@@ -88,6 +88,7 @@ export default function Onboarding({ onComplete }) {
                 onRename={handleColumnRename}
                 onAdd={handleColumnAdd}
                 onDelete={handleColumnDelete}
+                onReorder={setColumns}
               />
             )}
             {step === 3 && (
@@ -170,14 +171,39 @@ function StepOne({ boardName, onChange }) {
   );
 }
 
-function StepTwo({ columns, onRename, onAdd, onDelete }) {
+function StepTwo({ columns, onRename, onAdd, onDelete, onReorder }) {
+  const dragCol = useRef(null);
+
+  const handleDragStart = (id) => { dragCol.current = id; };
+  const handleDrop = (targetId) => {
+    const from = dragCol.current;
+    dragCol.current = null;
+    if (!from || from === targetId) return;
+    const next = [...columns];
+    const fromIdx = next.findIndex((c) => c.id === from);
+    const toIdx = next.findIndex((c) => c.id === targetId);
+    const [moved] = next.splice(fromIdx, 1);
+    next.splice(toIdx, 0, moved);
+    onReorder(next);
+  };
+
   return (
     <div>
       <h2 className="font-display text-3xl font-bold text-ink-primary mb-2">Customize columns</h2>
-      <p className="text-sm text-ink-secondary mb-5">Rename, add, or remove columns.</p>
+      <p className="text-sm text-ink-secondary mb-5">Rename, reorder, add, or remove columns.</p>
       <div className="flex flex-col gap-2 max-h-56 overflow-y-auto pr-1">
         {columns.map((col) => (
-          <div key={col.id} className="flex items-center gap-2">
+          <div
+            key={col.id}
+            draggable
+            onDragStart={() => handleDragStart(col.id)}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={() => handleDrop(col.id)}
+            className="flex items-center gap-2 cursor-grab active:cursor-grabbing"
+          >
+            <svg className="text-ink-secondary shrink-0" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
             <input
               type="text"
               value={col.title}
