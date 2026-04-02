@@ -117,11 +117,10 @@ export default function App() {
       });
     });
     const results = (await Promise.all(promises)).filter(Boolean);
-    setColumns((prev) => {
-      const next = { ...prev };
-      results.forEach(({ colId, task }) => { next[colId] = [...(next[colId] || []), task]; });
-      return next;
-    });
+    const next = {};
+    defs.forEach((col) => { next[col.id] = []; });
+    results.forEach(({ colId, task }) => { next[colId] = [...(next[colId] || []), task]; });
+    setColumns(next);
 
     setOnboarded(true);
   }, []);
